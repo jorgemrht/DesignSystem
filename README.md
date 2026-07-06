@@ -20,6 +20,7 @@ the current appearance.
 
 The source of truth is `Sources/DesignSystem/Resources/Colors.xcassets`.
 
-Color changes must be made in the asset catalog. The library does not depend on
-DesignSystemStitch; Stitch or any skill that needs the palette should read the
-named colors and Swift accessors from this package.
+Color changes must be made in the asset catalog while keeping the public token
+names stable. Apps can use the library directly through Swift Package Manager.
+External tools can update the same named colors, but the package itself has no
+dependency on those tools.
