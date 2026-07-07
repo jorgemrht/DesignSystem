@@ -1,30 +1,22 @@
-import CoreGraphics
+import Foundation
 
-public enum Spacing {
-  /// Extra extra small — 4 px
-  case xxs
-  /// Extra small — 8 px
-  case xs
-  /// Small — 12 px
-  case sm
-  /// Medium — 16 px
-  case md
-  /// Large — 24 px
-  case lg
-  /// Extra large — 32 px
-  case xl
-  /// Extra extra large — 48 px
-  case xxl
-
-  public var value: CGFloat {
-    switch self {
-      case .xxs: 4
-      case .xs: 8
-      case .sm: 12
-      case .md: 16
-      case .lg: 24
-      case .xl: 32
-      case .xxl: 48
-    }
-  }
+public extension CGFloat {
+    /// 2 pixels spacing
+    static let spacingXXXXS: CGFloat = 2
+    /// 4 pixels spacing
+    static let spacingXXXS: CGFloat = 4
+    /// 8 pixels spacing
+    static let spacingXXS: CGFloat = 8
+    /// 12 pixels spacing
+    static let spacingXS: CGFloat = 12
+    /// 16 pixels spacing
+    static let spacingS: CGFloat = 16
+    /// 24 pixels spacing
+    static let spacingM: CGFloat = 24
+    /// 32 pixels spacing
+    static let spacingL: CGFloat = 32
+    /// 40 pixels spacing
+    static let spacingXL: CGFloat = 40
+    /// 48 pixels spacing
+    static let spacingXXL: CGFloat = 48
 }
