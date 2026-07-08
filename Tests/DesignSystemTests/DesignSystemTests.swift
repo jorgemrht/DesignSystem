@@ -1,6 +1,6 @@
 import SwiftUI
 import Testing
-@testable import DesignSystem
+@testable import JDesignSystem
 
 @Test
 func fontSizeTextStyleMappingIsCorrect() async throws {

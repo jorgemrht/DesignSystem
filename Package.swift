@@ -13,19 +13,19 @@ let package = Package(
   ],
   products: [
     .library(
-      name: "DesignSystem",
-      targets: ["DesignSystem"]
+      name: "JDesignSystem",
+      targets: ["JDesignSystem"]
     ),
   ],
   targets: [
     .target(
-      name: "DesignSystem",
+      name: "JDesignSystem",
       path: "Sources/DesignSystem",
       resources: [.process("Theme/Resources")]
     ),
     .testTarget(
       name: "DesignSystemTests",
-      dependencies: ["DesignSystem"]
+      dependencies: ["JDesignSystem"]
     ),
   ]
 )
