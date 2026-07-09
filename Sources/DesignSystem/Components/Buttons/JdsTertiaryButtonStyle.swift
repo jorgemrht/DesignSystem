@@ -5,6 +5,7 @@ public struct JdsTertiaryButtonStyle: ButtonStyle {
 
   private let size: JdsButtonSize
   private let isFullWidth: Bool
+  private let appearance: JdsButtonAppearance
 
   public init(
     size: JdsButtonSize = .medium,
@@ -12,41 +13,46 @@ public struct JdsTertiaryButtonStyle: ButtonStyle {
   ) {
     self.size = size
     self.isFullWidth = isFullWidth
+    self.appearance = .tertiaryButton
+  }
+
+  public init(
+    size: JdsButtonSize = .medium,
+    isFullWidth: Bool = false,
+    appearance: JdsButtonAppearance
+  ) {
+    self.size = size
+    self.isFullWidth = isFullWidth
+    self.appearance = appearance
   }
 
   public func makeBody(configuration: Configuration) -> some View {
     configuration.label
-      .font(size.labelFont)
-      .multilineTextAlignment(.center)
-      .foregroundStyle(foregroundColor(isPressed: configuration.isPressed))
-      .padding(.horizontal, size.horizontalPadding)
-      .frame(maxWidth: isFullWidth ? .infinity : nil)
-      .frame(minHeight: size.minHeight)
-      .contentShape(Capsule())
-  }
-
-  private func foregroundColor(isPressed: Bool) -> Color {
-    guard isEnabled else { return .dsOnSurface.opacity(0.38) }
-    return isPressed ? .dsPrimary.opacity(0.62) : .dsPrimary
+      .modifier(
+        ButtonAppearanceModifier(
+          appearance: appearance,
+          size: size,
+          isFullWidth: isFullWidth,
+          cornerRadius: .cornerRadiusM,
+          isEnabled: isEnabled,
+          isPressed: configuration.isPressed
+        )
+      )
   }
 }
 
-#if DEBUG
-#Preview("Tertiary Button") {
-  VStack(spacing: .spacingS) {
-    Button("Tertiary", systemImage: "text.cursor") {}
-      .buttonStyle(.JdsTertiary)
-
-    Button("Full width tertiary") {}
-      .buttonStyle(.JdsTertiary(isFullWidth: true))
-
-    Button("Disabled") {}
-      .buttonStyle(.JdsTertiary)
-      .disabled(true)
-  }
-  .padding(.spacingM)
+private extension JdsButtonAppearance {
+  static let tertiaryButton = JdsButtonAppearance(
+    foreground: .dsPrimary,
+    pressedForeground: .dsPrimary.opacity(0.70),
+    background: nil,
+    pressedOverlay: .clear,
+    pressedOverlayOpacity: 0,
+    disabledForeground: .dsPrimary.opacity(0.38),
+    disabledBackground: nil
+  )
 }
-#endif
+
 
 public extension ButtonStyle where Self == JdsTertiaryButtonStyle {
   static var JdsTertiary: Self { .init() }
@@ -57,4 +63,28 @@ public extension ButtonStyle where Self == JdsTertiaryButtonStyle {
   ) -> Self {
     .init(size: size, isFullWidth: isFullWidth)
   }
+
+  static func JdsTertiary(
+    size: JdsButtonSize = .medium,
+    isFullWidth: Bool = false,
+    appearance: JdsButtonAppearance
+  ) -> Self {
+    .init(
+      size: size,
+      isFullWidth: isFullWidth,
+      appearance: appearance
+    )
+  }
 }
+
+#if DEBUG
+#Preview("Tertiary Button Light") {
+  JdsTertiaryButtonStyleMock()
+    .preferredColorScheme(.light)
+}
+
+#Preview("Tertiary Button Dark") {
+  JdsTertiaryButtonStyleMock()
+    .preferredColorScheme(.dark)
+}
+#endif

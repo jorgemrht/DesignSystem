@@ -1,6 +1,6 @@
 import SwiftUI
 
-public enum JdsTextFieldPresentation: Sendable {
+public enum JdsTextFieldPresentation: Sendable, CaseIterable {
   case plain
   case tinted
   case bordered
@@ -8,13 +8,15 @@ public enum JdsTextFieldPresentation: Sendable {
 }
 
 public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
+  @Environment(\.isEnabled) private var isEnabled
+
   private let title: String?
   private let message: String?
   private let symbol: JdsSystemSymbol?
   private let presentation: JdsTextFieldPresentation
   private let state: JdsTextFieldState
   private let cornerRadius: CGFloat
-  private let appearance = TextFieldAppearance.standard
+  private let appearance: JdsTextFieldAppearance
 
   public init(
     title: String? = nil,
@@ -22,7 +24,8 @@ public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
     symbol: JdsSystemSymbol? = nil,
     presentation: JdsTextFieldPresentation = .plain,
     state: JdsTextFieldState = .normal,
-    cornerRadius: CGFloat = .cornerRadiusM
+    cornerRadius: CGFloat = .cornerRadiusM,
+    appearance: JdsTextFieldAppearance = .standard
   ) {
     self.title = title
     self.message = message
@@ -30,6 +33,7 @@ public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
     self.presentation = presentation
     self.state = state
     self.cornerRadius = cornerRadius
+    self.appearance = appearance
   }
 
   @MainActor public func _body(configuration: TextField<Self._Label>) -> some View {
@@ -37,19 +41,19 @@ public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
       if let title {
         Text(title)
           .font(.subheadline)
-          .foregroundStyle(appearance.labelColor(state: state, isEnabled: true))
+          .foregroundStyle(appearance.labelColor(state: state, isEnabled: isEnabled))
       }
 
       HStack(spacing: .spacingXXS) {
         if let symbol {
           Image(systemSymbol: symbol)
-            .foregroundStyle(appearance.prompt)
+            .foregroundStyle(appearance.promptColor(isEnabled: isEnabled))
             .accessibilityHidden(true)
         }
 
         configuration
           .font(.body)
-          .foregroundStyle(appearance.contentColor(isEnabled: true))
+          .foregroundStyle(appearance.contentColor(isEnabled: isEnabled))
       }
       .padding(.horizontal, horizontalPadding)
       .frame(maxWidth: .infinity, minHeight: minHeight, alignment: .leading)
@@ -101,11 +105,15 @@ private struct TextFieldBackground: View {
 
   let presentation: JdsTextFieldPresentation
   let state: JdsTextFieldState
-  let appearance: TextFieldAppearance
+  let appearance: JdsTextFieldAppearance
   let cornerRadius: CGFloat
 
   var body: some View {
-    let outline = appearance.outlineColor(state: state, isEnabled: isEnabled)
+    let outline = appearance.outlineColor(
+      state: state,
+      isEnabled: isEnabled,
+      presentation: presentation
+    )
 
     switch presentation {
     case .plain:
@@ -168,6 +176,28 @@ private struct JdsTextFieldStylePreview: View {
 
       TextField("Search", text: $query)
         .textFieldStyle(.JdsTintedTextField(title: "Icon", symbol: .magnifyingglass))
+
+      TextField("Disabled", text: $plain)
+        .textFieldStyle(.JdsBorderedTextField(title: "Disabled", message: "Unavailable"))
+        .disabled(true)
+
+      TextField("Custom", text: $query)
+        .textFieldStyle(
+          .JdsTintedTextField(
+            title: "Custom appearance",
+            state: .focused,
+            appearance: JdsTextFieldAppearance(
+              text: .dsOnTertiaryContainer,
+              prompt: .dsOnSurfaceVariant,
+              label: .dsOnTertiaryContainer,
+              helper: .dsOnSurfaceVariant,
+              container: .dsTertiaryContainer,
+              indicator: .dsOutline,
+              focusedIndicator: .dsTertiary,
+              error: .dsError
+            )
+          )
+        )
     }
     .padding(.spacingM)
     .frame(width: 360)

@@ -7,11 +7,10 @@ public struct JdsTextArea: View {
   private let state: JdsTextFieldState
   private let minHeight: CGFloat
   private let cornerRadius: CGFloat
+  private let appearance: JdsTextFieldAppearance
 
   @Binding private var text: String
   @Environment(\.isEnabled) private var isEnabled
-
-  private let appearance = TextFieldAppearance.standard
 
   public init(
     _ title: String? = nil,
@@ -20,7 +19,8 @@ public struct JdsTextArea: View {
     message: String? = nil,
     state: JdsTextFieldState = .normal,
     minHeight: CGFloat = 120,
-    cornerRadius: CGFloat = .cornerRadiusM
+    cornerRadius: CGFloat = .cornerRadiusM,
+    appearance: JdsTextFieldAppearance = .standard
   ) {
     self.title = title
     self._text = text
@@ -29,6 +29,7 @@ public struct JdsTextArea: View {
     self.state = state
     self.minHeight = minHeight
     self.cornerRadius = cornerRadius
+    self.appearance = appearance
   }
 
   public var body: some View {
@@ -43,7 +44,7 @@ public struct JdsTextArea: View {
         if text.isEmpty {
           Text(placeholder)
             .font(.body)
-            .foregroundStyle(appearance.prompt)
+            .foregroundStyle(appearance.promptColor(isEnabled: isEnabled))
             .padding(.top, .spacingXS)
             .padding(.horizontal, .spacingS)
             .allowsHitTesting(false)
@@ -59,7 +60,11 @@ public struct JdsTextArea: View {
       }
       .background {
         let shape = RoundedRectangle(cornerRadius: cornerRadius)
-        let outline = appearance.outlineColor(state: state, isEnabled: isEnabled)
+        let outline = appearance.outlineColor(
+          state: state,
+          isEnabled: isEnabled,
+          presentation: .bordered
+        )
 
         shape
           .fill(.dsSurface)
@@ -106,6 +111,26 @@ private struct JdsTextAreaPreview: View {
         message: "Minimum 20 characters",
         state: .error,
         cornerRadius: .cornerRadiusS
+      )
+
+      JdsTextArea("Disabled", text: $notes, placeholder: "Unavailable")
+        .disabled(true)
+
+      JdsTextArea(
+        "Custom",
+        text: $notes,
+        placeholder: "Custom appearance",
+        state: .focused,
+        appearance: JdsTextFieldAppearance(
+          text: .dsOnTertiaryContainer,
+          prompt: .dsOnSurfaceVariant,
+          label: .dsOnTertiaryContainer,
+          helper: .dsOnSurfaceVariant,
+          container: .dsSurface,
+          indicator: .dsOutline,
+          focusedIndicator: .dsTertiary,
+          error: .dsError
+        )
       )
     }
     .padding(.spacingM)

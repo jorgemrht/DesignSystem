@@ -1,30 +1,46 @@
 import SwiftUI
 
 public struct JdsBorderedButtonStyle: ButtonStyle {
+  @Environment(\.isEnabled) private var isEnabled
+
   private let size: JdsButtonSize
   private let isFullWidth: Bool
   private let cornerRadius: CGFloat
+  private let appearance: JdsButtonAppearance
 
   public init(
     size: JdsButtonSize = .medium,
     isFullWidth: Bool = false,
-    cornerRadius: CGFloat = .cornerRadiusXXL
+    cornerRadius: CGFloat = .cornerRadiusL
   ) {
     self.size = size
     self.isFullWidth = isFullWidth
     self.cornerRadius = cornerRadius
+    self.appearance = .borderedButton
+  }
+
+  public init(
+    size: JdsButtonSize = .medium,
+    isFullWidth: Bool = false,
+    cornerRadius: CGFloat = .cornerRadiusL,
+    appearance: JdsButtonAppearance
+  ) {
+    self.size = size
+    self.isFullWidth = isFullWidth
+    self.cornerRadius = cornerRadius
+    self.appearance = appearance
   }
 
   public func makeBody(configuration: Configuration) -> some View {
     configuration.label
       .modifier(
         ButtonAppearanceModifier(
-          appearance: .bordered,
+          appearance: appearance,
           size: size,
           isFullWidth: isFullWidth,
           cornerRadius: cornerRadius,
-          isPressed: configuration.isPressed,
-          pressedOverlayOpacity: 0.10
+          isEnabled: isEnabled,
+          isPressed: configuration.isPressed
         )
       )
   }
@@ -36,31 +52,46 @@ public extension ButtonStyle where Self == JdsBorderedButtonStyle {
   static func JdsBordered(
     size: JdsButtonSize = .medium,
     isFullWidth: Bool = false,
-    cornerRadius: CGFloat = .cornerRadiusXXL
+    cornerRadius: CGFloat = .cornerRadiusL
   ) -> Self {
     .init(size: size, isFullWidth: isFullWidth, cornerRadius: cornerRadius)
   }
+
+  static func JdsBordered(
+    size: JdsButtonSize = .medium,
+    isFullWidth: Bool = false,
+    cornerRadius: CGFloat = .cornerRadiusL,
+    appearance: JdsButtonAppearance
+  ) -> Self {
+    .init(
+      size: size,
+      isFullWidth: isFullWidth,
+      cornerRadius: cornerRadius,
+      appearance: appearance
+    )
+  }
+}
+
+private extension JdsButtonAppearance {
+  static let borderedButton = JdsButtonAppearance(
+    foreground: .dsPrimary,
+    background: nil,
+    border: .dsOutline,
+    pressedOverlay: .dsPrimary,
+    disabledForeground: .dsPrimary.opacity(0.38),
+    disabledBackground: nil,
+    disabledBorder: .dsPrimary.opacity(0.24)
+  )
 }
 
 #if DEBUG
-#Preview("Bordered Button") {
-  VStack(spacing: .spacingS) {
-    Button("Bordered", systemImage: "square.and.pencil") {}
-      .buttonStyle(.JdsBordered)
+#Preview("Bordered Button Light") {
+  JdsBorderedButtonStyleMock()
+    .preferredColorScheme(.light)
+}
 
-    Button("Full width bordered") {}
-      .buttonStyle(.JdsBordered(isFullWidth: true))
-
-    Button("Square bordered") {}
-      .buttonStyle(.JdsBordered(cornerRadius: .cornerRadiusNone))
-
-    Button("Medium radius bordered") {}
-      .buttonStyle(.JdsBordered(cornerRadius: .cornerRadiusM))
-
-    Button("Disabled") {}
-      .buttonStyle(.JdsBordered)
-      .disabled(true)
-  }
-  .padding(.spacingM)
+#Preview("Bordered Button Dark") {
+  JdsBorderedButtonStyleMock()
+    .preferredColorScheme(.dark)
 }
 #endif

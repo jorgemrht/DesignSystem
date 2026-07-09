@@ -1,57 +1,61 @@
 import SwiftUI
 
 public struct JdsPrimaryButtonStyle: ButtonStyle {
+  @Environment(\.isEnabled) private var isEnabled
+
   private let size: JdsButtonSize
   private let isFullWidth: Bool
   private let cornerRadius: CGFloat
+  private let appearance: JdsButtonAppearance
 
   public init(
     size: JdsButtonSize = .medium,
     isFullWidth: Bool = false,
-    cornerRadius: CGFloat = .cornerRadiusXXL
+    cornerRadius: CGFloat = .cornerRadiusL
   ) {
     self.size = size
     self.isFullWidth = isFullWidth
     self.cornerRadius = cornerRadius
+    self.appearance = .primaryButton
+  }
+
+  public init(
+    size: JdsButtonSize = .medium,
+    isFullWidth: Bool = false,
+    cornerRadius: CGFloat = .cornerRadiusL,
+    appearance: JdsButtonAppearance
+  ) {
+    self.size = size
+    self.isFullWidth = isFullWidth
+    self.cornerRadius = cornerRadius
+    self.appearance = appearance
   }
 
   public func makeBody(configuration: Configuration) -> some View {
     configuration.label
       .modifier(
         ButtonAppearanceModifier(
-          appearance: .prominent,
+          appearance: appearance,
           size: size,
           isFullWidth: isFullWidth,
           cornerRadius: cornerRadius,
-          isPressed: configuration.isPressed,
-          pressedOverlayOpacity: 0.10
+          isEnabled: isEnabled,
+          isPressed: configuration.isPressed
         )
       )
   }
 }
 
-#if DEBUG
-#Preview("Primary Button") {
-  VStack(spacing: .spacingS) {
-    Button("Primary", systemImage: "checkmark") {}
-      .buttonStyle(.JdsPrimary)
-
-    Button("Full width primary") {}
-      .buttonStyle(.JdsPrimary(isFullWidth: true))
-
-    Button("Square primary") {}
-      .buttonStyle(.JdsPrimary(cornerRadius: .cornerRadiusNone))
-
-    Button("Medium radius primary") {}
-      .buttonStyle(.JdsPrimary(cornerRadius: .cornerRadiusM))
-
-    Button("Disabled") {}
-      .buttonStyle(.JdsPrimary)
-      .disabled(true)
-  }
-  .padding(.spacingM)
+private extension JdsButtonAppearance {
+  static let primaryButton = JdsButtonAppearance(
+    foreground: .dsOnPrimary,
+    background: .dsPrimary,
+    pressedOverlay: .dsOnPrimary,
+    disabledForeground: .dsOnPrimary.opacity(0.55),
+    disabledBackground: .dsPrimary.opacity(0.38)
+  )
 }
-#endif
+
 
 public extension ButtonStyle where Self == JdsPrimaryButtonStyle {
   static var JdsPrimary: Self { .init() }
@@ -59,8 +63,34 @@ public extension ButtonStyle where Self == JdsPrimaryButtonStyle {
   static func JdsPrimary(
     size: JdsButtonSize = .medium,
     isFullWidth: Bool = false,
-    cornerRadius: CGFloat = .cornerRadiusXXL
+    cornerRadius: CGFloat = .cornerRadiusL
   ) -> Self {
     .init(size: size, isFullWidth: isFullWidth, cornerRadius: cornerRadius)
   }
+
+  static func JdsPrimary(
+    size: JdsButtonSize = .medium,
+    isFullWidth: Bool = false,
+    cornerRadius: CGFloat = .cornerRadiusL,
+    appearance: JdsButtonAppearance
+  ) -> Self {
+    .init(
+      size: size,
+      isFullWidth: isFullWidth,
+      cornerRadius: cornerRadius,
+      appearance: appearance
+    )
+  }
 }
+
+#if DEBUG
+#Preview("Primary Button Light") {
+  JdsPrimaryButtonStyleMock()
+    .preferredColorScheme(.light)
+}
+
+#Preview("Primary Button Dark") {
+  JdsPrimaryButtonStyleMock()
+    .preferredColorScheme(.dark)
+}
+#endif
