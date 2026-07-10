@@ -13,6 +13,10 @@ public enum JdsIconButtonSize: Sendable, CaseIterable {
     }
   }
 
+  func size(scaledBy dynamicTypeScale: CGFloat) -> CGFloat {
+    max(size, size * dynamicTypeScale)
+  }
+
   var iconFont: Font {
     switch self {
     case .small: .body

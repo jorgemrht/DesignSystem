@@ -2,6 +2,7 @@ import SwiftUI
 
 public struct JdsIconButtonStyle: ButtonStyle {
   @Environment(\.isEnabled) private var isEnabled
+  @ScaledMetric(relativeTo: .body) private var dynamicTypeScale: CGFloat = 1
 
   private let prominence: JdsIconButtonProminence
   private let size: JdsIconButtonSize
@@ -36,7 +37,7 @@ public struct JdsIconButtonStyle: ButtonStyle {
 
   public func makeBody(configuration: Configuration) -> some View {
     let appearance = appearance ?? prominence.appearance
-    let resolvedSize = customSize ?? size.size
+    let resolvedSize = customSize ?? size.size(scaledBy: dynamicTypeScale)
     let resolvedFont = customFont ?? size.iconFont
     let interactionState = JdsButtonInteractionState(
       isEnabled: isEnabled,

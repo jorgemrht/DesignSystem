@@ -2,6 +2,7 @@ import SwiftUI
 
 public struct JdsFABButtonStyle: ButtonStyle {
   @Environment(\.isEnabled) private var isEnabled
+  @ScaledMetric(relativeTo: .body) private var dynamicTypeScale: CGFloat = 1
 
   private let variant: JdsFABButtonVariant
   private let size: JdsFABButtonSize
@@ -39,12 +40,13 @@ public struct JdsFABButtonStyle: ButtonStyle {
     )
     let visualState = appearance.visualState(for: interactionState)
     let resolvedShadow = isEnabled ? shadow : nil
+    let resolvedSize = size.size(scaledBy: dynamicTypeScale)
 
     configuration.label
       .labelStyle(.iconOnly)
-      .font(.system(size: size.iconFont))
+      .font(size.iconFont(scaledBy: dynamicTypeScale))
       .foregroundStyle(visualState.foreground)
-      .frame(width: size.size, height: size.size)
+      .frame(width: resolvedSize, height: resolvedSize)
       .background {
         Circle().fill(visualState.background)
       }

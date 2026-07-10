@@ -13,7 +13,15 @@ public enum JdsFABButtonSize: Sendable, CaseIterable {
     }
   }
 
-  var iconFont: CGFloat {
+  func size(scaledBy dynamicTypeScale: CGFloat) -> CGFloat {
+    max(size, size * dynamicTypeScale)
+  }
+
+  func iconFont(scaledBy dynamicTypeScale: CGFloat) -> Font {
+    .system(size: max(iconSize, iconSize * dynamicTypeScale))
+  }
+
+  private var iconSize: CGFloat {
     switch self {
     case .small, .medium: .iconSizeM
     case .large: .iconSizeL
