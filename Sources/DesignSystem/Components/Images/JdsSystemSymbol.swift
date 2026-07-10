@@ -20,6 +20,7 @@ public extension JdsSystemSymbol {
   static let magnifyingglass = Self("magnifyingglass")
   static let plus = Self("plus")
   static let xmark = Self("xmark")
+  static let xmarkCircleFill = Self("xmark.circle.fill")
 }
 
 public extension Image {

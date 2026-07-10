@@ -1,11 +1,5 @@
 import SwiftUI
 
-public enum JdsTextFieldState: Sendable, CaseIterable {
-  case normal
-  case focused
-  case error
-}
-
 public struct JdsTextFieldAppearance: Sendable {
   public let text: Color
   public let prompt: Color
@@ -104,23 +98,6 @@ public struct JdsTextFieldAppearance: Sendable {
       return focusedIndicator
     case .error:
       return error
-    }
-  }
-}
-
-struct TextFieldSupportText: View {
-  let message: String?
-  let state: JdsTextFieldState
-  let appearance: JdsTextFieldAppearance
-
-  @Environment(\.isEnabled) private var isEnabled
-
-  var body: some View {
-    if let message {
-      Text(message)
-        .font(.caption)
-        .foregroundStyle(appearance.supportColor(state: state, isEnabled: isEnabled))
-        .accessibilityLabel(state == .error ? "Error: \(message)" : message)
     }
   }
 }

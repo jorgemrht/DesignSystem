@@ -7,12 +7,14 @@ public enum JdsTextFieldPresentation: Sendable, CaseIterable {
   case underlined
 }
 
-public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
+public struct JdsTextInput: @preconcurrency TextFieldStyle {
   @Environment(\.isEnabled) private var isEnabled
+  @Environment(\.isFocused) private var isFocused
 
   private let title: String?
   private let message: String?
   private let symbol: JdsSystemSymbol?
+  private let accessory: JdsTextFieldAccessory?
   private let presentation: JdsTextFieldPresentation
   private let state: JdsTextFieldState
   private let cornerRadius: CGFloat
@@ -22,6 +24,7 @@ public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
     title: String? = nil,
     message: String? = nil,
     symbol: JdsSystemSymbol? = nil,
+    accessory: JdsTextFieldAccessory? = nil,
     presentation: JdsTextFieldPresentation = .plain,
     state: JdsTextFieldState = .normal,
     cornerRadius: CGFloat = .cornerRadiusM,
@@ -30,6 +33,7 @@ public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
     self.title = title
     self.message = message
     self.symbol = symbol
+    self.accessory = accessory
     self.presentation = presentation
     self.state = state
     self.cornerRadius = cornerRadius
@@ -37,11 +41,13 @@ public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
   }
 
   @MainActor public func _body(configuration: TextField<Self._Label>) -> some View {
+    let resolvedState = resolvedState
+
     VStack(alignment: .leading, spacing: .spacingXXXS) {
       if let title {
         Text(title)
           .font(.subheadline)
-          .foregroundStyle(appearance.labelColor(state: state, isEnabled: isEnabled))
+          .foregroundStyle(appearance.labelColor(state: resolvedState, isEnabled: isEnabled))
       }
 
       HStack(spacing: .spacingXXS) {
@@ -54,19 +60,23 @@ public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
         configuration
           .font(.body)
           .foregroundStyle(appearance.contentColor(isEnabled: isEnabled))
+
+        if let accessory {
+          JdsTextFieldAccessoryView(accessory: accessory, appearance: appearance)
+        }
       }
       .padding(.horizontal, horizontalPadding)
       .frame(maxWidth: .infinity, minHeight: minHeight, alignment: .leading)
       .background {
         TextFieldBackground(
           presentation: presentation,
-          state: state,
+          state: resolvedState,
           appearance: appearance,
           cornerRadius: cornerRadius
         )
       }
 
-      TextFieldSupportText(message: message, state: state, appearance: appearance)
+      TextFieldSupportText(message: message, state: resolvedState, appearance: appearance)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .accessibilityElement(children: .combine)
@@ -97,6 +107,10 @@ public struct JdsTextFieldStyle: @preconcurrency TextFieldStyle {
     }
 
     return message ?? ""
+  }
+
+  private var resolvedState: JdsTextFieldState {
+    state == .error ? .error : (isFocused ? .focused : state)
   }
 }
 
@@ -149,68 +163,13 @@ private struct TextFieldBackground: View {
 }
 
 #if DEBUG
-private struct JdsTextFieldStylePreview: View {
-  @State private var plain = ""
-  @State private var email = "dev@jds.dev"
-  @State private var query = ""
-
-  var body: some View {
-    VStack(spacing: .spacingS) {
-      TextField("Name", text: $plain)
-        .textFieldStyle(.JdsPlainTextField(title: "Plain"))
-
-      TextField("Email", text: $email)
-        .textFieldStyle(.JdsTintedTextField(title: "Tinted", state: .focused))
-
-      TextField("Company", text: $plain)
-        .textFieldStyle(.JdsTintedTextField(title: "Tinted square", cornerRadius: .cornerRadiusNone))
-
-      TextField("Username", text: $plain)
-        .textFieldStyle(.JdsBorderedTextField(title: "Bordered"))
-
-      TextField("Handle", text: $plain)
-        .textFieldStyle(.JdsBorderedTextField(title: "Bordered small radius", cornerRadius: .cornerRadiusS))
-
-      TextField("Invite code", text: $plain)
-        .textFieldStyle(.JdsUnderlinedTextField(title: "Underlined", message: "Invalid code", state: .error))
-
-      TextField("Search", text: $query)
-        .textFieldStyle(.JdsTintedTextField(title: "Icon", symbol: .magnifyingglass))
-
-      TextField("Disabled", text: $plain)
-        .textFieldStyle(.JdsBorderedTextField(title: "Disabled", message: "Unavailable"))
-        .disabled(true)
-
-      TextField("Custom", text: $query)
-        .textFieldStyle(
-          .JdsTintedTextField(
-            title: "Custom appearance",
-            state: .focused,
-            appearance: JdsTextFieldAppearance(
-              text: .dsOnTertiaryContainer,
-              prompt: .dsOnSurfaceVariant,
-              label: .dsOnTertiaryContainer,
-              helper: .dsOnSurfaceVariant,
-              container: .dsTertiaryContainer,
-              indicator: .dsOutline,
-              focusedIndicator: .dsTertiary,
-              error: .dsError
-            )
-          )
-        )
-    }
-    .padding(.spacingM)
-    .frame(width: 360)
-  }
-}
-
 #Preview("Text Field Light") {
-  JdsTextFieldStylePreview()
+  JdsTextInputMock()
     .preferredColorScheme(.light)
 }
 
 #Preview("Text Field Dark") {
-  JdsTextFieldStylePreview()
+  JdsTextInputMock()
     .preferredColorScheme(.dark)
 }
 #endif

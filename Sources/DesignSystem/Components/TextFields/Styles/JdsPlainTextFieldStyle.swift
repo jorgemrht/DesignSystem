@@ -1,6 +1,6 @@
 import SwiftUI
 
-public extension TextFieldStyle where Self == JdsTextFieldStyle {
+public extension TextFieldStyle where Self == JdsTextInput {
   static var JdsPlainTextField: Self {
     .init(presentation: .plain)
   }
@@ -9,6 +9,7 @@ public extension TextFieldStyle where Self == JdsTextFieldStyle {
     title: String? = nil,
     message: String? = nil,
     symbol: JdsSystemSymbol? = nil,
+    accessory: JdsTextFieldAccessory? = nil,
     state: JdsTextFieldState = .normal,
     cornerRadius: CGFloat = .cornerRadiusM,
     appearance: JdsTextFieldAppearance = .standard
@@ -17,6 +18,7 @@ public extension TextFieldStyle where Self == JdsTextFieldStyle {
       title: title,
       message: message,
       symbol: symbol,
+      accessory: accessory,
       presentation: .plain,
       state: state,
       cornerRadius: cornerRadius,

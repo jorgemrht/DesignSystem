@@ -6,6 +6,8 @@ public struct JdsTextArea: View {
   private let message: String?
   private let state: JdsTextFieldState
   private let minHeight: CGFloat
+  private let maxLength: Int?
+  private let showsCharacterCount: Bool
   private let cornerRadius: CGFloat
   private let appearance: JdsTextFieldAppearance
 
@@ -19,6 +21,8 @@ public struct JdsTextArea: View {
     message: String? = nil,
     state: JdsTextFieldState = .normal,
     minHeight: CGFloat = 120,
+    maxLength: Int? = nil,
+    showsCharacterCount: Bool = false,
     cornerRadius: CGFloat = .cornerRadiusM,
     appearance: JdsTextFieldAppearance = .standard
   ) {
@@ -28,6 +32,8 @@ public struct JdsTextArea: View {
     self.message = message
     self.state = state
     self.minHeight = minHeight
+    self.maxLength = maxLength
+    self.showsCharacterCount = showsCharacterCount
     self.cornerRadius = cornerRadius
     self.appearance = appearance
   }
@@ -57,6 +63,10 @@ public struct JdsTextArea: View {
           .padding(.horizontal, .spacingXXS)
           .padding(.vertical, .spacingXXXS)
           .frame(minHeight: minHeight)
+          .onChange(of: text) { _, newValue in
+            guard let maxLength, newValue.count > maxLength else { return }
+            text = String(newValue.prefix(maxLength))
+          }
       }
       .background {
         let shape = RoundedRectangle(cornerRadius: cornerRadius)
@@ -73,7 +83,17 @@ public struct JdsTextArea: View {
           }
       }
 
-      TextFieldSupportText(message: message, state: state, appearance: appearance)
+      HStack(alignment: .firstTextBaseline, spacing: .spacingXXS) {
+        TextFieldSupportText(message: message, state: state, appearance: appearance)
+
+        Spacer(minLength: .spacingXXS)
+
+        if showsCharacterCount, let maxLength {
+          Text("\(text.count)/\(maxLength)")
+            .font(.caption)
+            .foregroundStyle(appearance.supportColor(state: state, isEnabled: isEnabled))
+        }
+      }
     }
     .accessibilityElement(children: .combine)
     .accessibilityHint(accessibilityHint)
@@ -89,62 +109,13 @@ public struct JdsTextArea: View {
 }
 
 #if DEBUG
-private struct JdsTextAreaPreview: View {
-  @State private var notes = ""
-  @State private var errorText = "Too short"
-
-  var body: some View {
-    VStack(spacing: .spacingS) {
-      JdsTextArea("Notes", text: $notes, placeholder: "Add a note")
-
-      JdsTextArea(
-        "Square notes",
-        text: $notes,
-        placeholder: "Add a note",
-        cornerRadius: .cornerRadiusNone
-      )
-
-      JdsTextArea(
-        "Feedback",
-        text: $errorText,
-        placeholder: "Tell us more",
-        message: "Minimum 20 characters",
-        state: .error,
-        cornerRadius: .cornerRadiusS
-      )
-
-      JdsTextArea("Disabled", text: $notes, placeholder: "Unavailable")
-        .disabled(true)
-
-      JdsTextArea(
-        "Custom",
-        text: $notes,
-        placeholder: "Custom appearance",
-        state: .focused,
-        appearance: JdsTextFieldAppearance(
-          text: .dsOnTertiaryContainer,
-          prompt: .dsOnSurfaceVariant,
-          label: .dsOnTertiaryContainer,
-          helper: .dsOnSurfaceVariant,
-          container: .dsSurface,
-          indicator: .dsOutline,
-          focusedIndicator: .dsTertiary,
-          error: .dsError
-        )
-      )
-    }
-    .padding(.spacingM)
-    .background(.dsSurface)
-  }
-}
-
 #Preview("Text Area Light") {
-  JdsTextAreaPreview()
+  JdsTextAreaMock()
     .preferredColorScheme(.light)
 }
 
 #Preview("Text Area Dark") {
-  JdsTextAreaPreview()
+  JdsTextAreaMock()
     .preferredColorScheme(.dark)
 }
 #endif
