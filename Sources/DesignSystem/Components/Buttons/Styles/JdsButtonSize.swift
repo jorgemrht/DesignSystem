@@ -21,7 +21,7 @@ public enum JdsButtonSize: Sendable, CaseIterable {
     }
   }
 
-  var labelFont: Font {
+  var labelFontSize: FontSize {
     switch self {
     case .small: .callout
     case .medium, .large: .body

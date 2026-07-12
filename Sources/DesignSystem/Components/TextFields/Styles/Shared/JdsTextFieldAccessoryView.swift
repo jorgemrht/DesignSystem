@@ -33,7 +33,7 @@ struct JdsTextFieldAccessoryView: View {
 
     case let .text(text):
       Text(text)
-        .font(.body)
+        .font(size: .body)
         .foregroundStyle(appearance.promptColor(isEnabled: isEnabled))
     }
   }

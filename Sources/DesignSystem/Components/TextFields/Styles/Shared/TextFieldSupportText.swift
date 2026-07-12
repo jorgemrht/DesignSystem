@@ -10,7 +10,7 @@ struct TextFieldSupportText: View {
   var body: some View {
     if let message {
       Text(message)
-        .font(.caption)
+        .font(size: .caption)
         .foregroundStyle(appearance.supportColor(state: state, isEnabled: isEnabled))
         .accessibilityLabel(state == .error ? "Error: \(message)" : message)
     }

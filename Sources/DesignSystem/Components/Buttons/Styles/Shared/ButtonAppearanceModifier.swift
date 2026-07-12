@@ -14,7 +14,7 @@ struct ButtonAppearanceModifier: ViewModifier {
     let visualState = appearance.visualState(for: interactionState)
 
     content
-      .font(size.labelFont)
+      .font(size: size.labelFontSize)
       .multilineTextAlignment(.center)
       .foregroundStyle(visualState.foreground)
       .padding(.horizontal, size.horizontalPadding)

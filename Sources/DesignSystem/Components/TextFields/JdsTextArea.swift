@@ -42,14 +42,14 @@ public struct JdsTextArea: View {
     VStack(alignment: .leading, spacing: .spacingXXXS) {
       if let title {
         Text(title)
-          .font(.subheadline)
+          .font(size: .subheadline)
           .foregroundStyle(appearance.labelColor(state: state, isEnabled: isEnabled))
       }
 
       ZStack(alignment: .topLeading) {
         if text.isEmpty {
           Text(placeholder)
-            .font(.body)
+            .font(size: .body)
             .foregroundStyle(appearance.promptColor(isEnabled: isEnabled))
             .padding(.top, .spacingXS)
             .padding(.horizontal, .spacingS)
@@ -57,7 +57,7 @@ public struct JdsTextArea: View {
         }
 
         TextEditor(text: $text)
-          .font(.body)
+          .font(size: .body)
           .foregroundStyle(appearance.contentColor(isEnabled: isEnabled))
           .scrollContentBackground(.hidden)
           .padding(.horizontal, .spacingXXS)
@@ -90,7 +90,7 @@ public struct JdsTextArea: View {
 
         if showsCharacterCount, let maxLength {
           Text("\(text.count)/\(maxLength)")
-            .font(.caption)
+            .font(size: .caption)
             .foregroundStyle(appearance.supportColor(state: state, isEnabled: isEnabled))
         }
       }

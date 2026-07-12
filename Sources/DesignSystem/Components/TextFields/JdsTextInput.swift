@@ -46,7 +46,7 @@ public struct JdsTextInput: @preconcurrency TextFieldStyle {
     VStack(alignment: .leading, spacing: .spacingXXXS) {
       if let title {
         Text(title)
-          .font(.subheadline)
+          .font(size: .subheadline)
           .foregroundStyle(appearance.labelColor(state: resolvedState, isEnabled: isEnabled))
       }
 
@@ -58,7 +58,7 @@ public struct JdsTextInput: @preconcurrency TextFieldStyle {
         }
 
         configuration
-          .font(.body)
+          .font(size: .body)
           .foregroundStyle(appearance.contentColor(isEnabled: isEnabled))
 
         if let accessory {

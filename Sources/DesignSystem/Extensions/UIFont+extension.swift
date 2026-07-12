@@ -45,8 +45,6 @@ public enum FontSize: String, CaseIterable {
 
 extension View {
   public func font(size: FontSize, weight: Font.Weight = .regular) -> some View {
-    self
-      .font(.system(size.textStyle, design: .default))
-      .fontWeight(weight)
+    modifier(JdsFontModifier(size: size, weight: weight))
   }
 }
